@@ -1,0 +1,26 @@
+server:
+  session-timeout: 1800
+  port: 18080
+  servlet:
+    context-path: /spring-boot-api
+
+spring:
+  profiles:
+    active: dev
+# 404 交给异常处理器处理
+  mvc:
+   throw-exception-if-no-handler-found: true
+  resources:
+    add-mappings: false
+
+#mybatis 配置
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+  mapper-locations: mybatis/**/*Mapper.xml
+  typeAliasesPackage: com.gs.**.entity
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
