@@ -1,6 +1,8 @@
 package com.gs.api.security.authention;
 
 import com.alibaba.fastjson.JSON;
+import com.gs.api.core.Result;
+import com.gs.api.core.ResultCode;
 import com.gs.api.util.JwtTokenUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -46,7 +48,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(HttpServletRequest request,HttpServletResponse response) throws AuthenticationException {
         // 从输入流中获取到登录的信息
         // 创建一个token并调用authenticationManager.authenticate() 让Spring security进行验证
-        return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getParameter("username"),request.getParameter("password")));
+        return authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getParameter("username"),
+                        request.getParameter("password")));
     }
 
     /**
@@ -56,24 +61,19 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest request,HttpServletResponse response,FilterChain chain,Authentication authResult) throws IOException {
         User user= (User) authResult.getPrincipal();
-
         // 从User中获取权限信息
         Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
         // 创建Token
         String token = JwtTokenUtil.createToken(user.getUsername(), authorities.toString());
-
         // 设置编码 防止乱码问题
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=utf-8");
-        // 在请求头里返回创建成功的token
-        //        // 设置请求头为带有"access_token "前缀的token字符串
+        // 设置请求头为带有"access_token "前缀的token字符串
         response.setHeader("access_token", JwtTokenUtil.TOKEN_PREFIX + token);
-
         // 处理编码方式 防止中文乱码
         response.setContentType("text/json;charset=utf-8");
-
         // 将反馈塞到HttpServletResponse中返回给前台
-        response.getWriter().write(JSON.toJSONString("登录成功"));
+        response.getWriter().write(JSON.toJSONString(Result.success()));
     }
 
     /**
@@ -110,10 +110,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         else{
             returnData="未知异常";
         }
-
         // 处理编码方式 防止中文乱码
         response.setContentType("text/json;charset=utf-8");
-        // 将反馈塞到HttpServletResponse中返回给前台
-        response.getWriter().write(JSON.toJSONString(returnData));
+        response.getWriter().write(JSON.toJSONString(Result.failure(ResultCode.WEB_401,returnData)));
     }
 }

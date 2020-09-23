@@ -4,6 +4,7 @@ import com.gs.api.shop.dao.RoleDao;
 import com.gs.api.shop.dao.UserDao;
 import com.gs.api.shop.entity.Role;
 import com.gs.api.shop.entity.User;
+import com.gs.api.util.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,10 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Description TODO 配置UserDetailsService的实现类 用于加载用户信息
@@ -43,7 +41,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (user == null) {
             throw new RuntimeException("用户不存在");
         }
-
         // 存放权限
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
 
@@ -57,4 +54,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return new org.springframework.security.core.userdetails
                 .User(username,new BCryptPasswordEncoder().encode(user.getPassword()),authorities);
     }
+
+
 }

@@ -1,10 +1,11 @@
 package com.gs.api.security.authention;
 
 import com.alibaba.fastjson.JSONObject;
+import com.gs.api.core.Result;
+import com.gs.api.core.ResultCode;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -22,6 +23,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint  {
         response.setCharacterEncoding("utf-8");
         response.setContentType("text/javascript;charset=utf-8");
         //处理对应的业务
-        response.getWriter().print(JSONObject.toJSONString("您未登录，没有访问权限"));
+        response.getWriter().print(JSONObject.toJSONString(Result.failure(ResultCode.WEB_401,"您未登录，请先登录再操作")));
     }
 }

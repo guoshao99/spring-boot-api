@@ -48,6 +48,26 @@ public class JwtTokenUtil {
         return token;
     }
 
+
+    /*public static String generateToken(Map<String, Object> claims) {
+        return Jwts.builder()
+                .setClaims(claims)
+                .setExpiration(new Date(System.currentTimeMillis() + JwtTokenUtil.EXPIRITION))
+                .signWith(SignatureAlgorithm.HS256, JwtTokenUtil.APPSECRET_KEY)
+                .compact();
+    }
+
+    public static String refreshToken(String token) {
+        String refreshedToken;
+        try {
+            Claims claims = getTokenClaim(token);
+            refreshedToken = generateToken(claims);
+        } catch (Exception e) {
+            refreshedToken = null;
+        }
+        return refreshedToken;
+    }*/
+
     /**
      * 获取Token中的信息 ，解析token
      */
@@ -100,26 +120,9 @@ public class JwtTokenUtil {
             Date expiration = claims.getExpiration();
             return expiration.before(new Date());
         } catch (Exception e) {
-            return true;
+            return false;
         }
     }
-
-    /**
-     * 刷新令牌
-     * @param token 原令牌
-     * @return 新令牌
-     */
-    /*public String refreshToken(String token) {
-        String refreshedToken;
-        try {
-            Claims claims = getTokenClaim(token);
-            claims.put("created", new Date());
-            refreshedToken = aa(claims);
-        } catch (Exception e) {
-            refreshedToken = null;
-        }
-        return refreshedToken;
-    }*/
 
 
     /**

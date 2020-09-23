@@ -49,9 +49,10 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             writeJson(response, "token 不是我们系统签发的");
             return;
         }
-        handleTokenExpired(response,request,chain);
+        //handleTokenExpired(response,request,chain);
+
         // 若请求头中有token,设置认证信息
-        SecurityContextHolder.getContext().setAuthentication(getAuthentication(tokenHeader));
+        SecurityContextHolder.getContext().setAuthentication(getAuthentication(response,tokenHeader));
         super.doFilterInternal(request, response, chain);
     }
 
@@ -70,7 +71,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         // 设置请求头
         response.addHeader(JwtTokenUtil.TOKEN_HEADER, newToken);
         // 若请求头中有token,设置认证信息
-        SecurityContextHolder.getContext().setAuthentication(getAuthentication(newToken));
+        SecurityContextHolder.getContext().setAuthentication(getAuthentication(response,newToken));
         filterChain.doFilter(request,response);
     }
 
@@ -79,13 +80,10 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
      * @param tokenHeader 字符串形式的Token请求头
      * @return 带用户名和密码以及权限的Authentication
      */
-    private UsernamePasswordAuthenticationToken getAuthentication(String tokenHeader) {
+    private UsernamePasswordAuthenticationToken getAuthentication(HttpServletResponse response,String tokenHeader) {
         // 去掉前缀 获取Token字符串
         String token = tokenHeader.replace(JwtTokenUtil.TOKEN_PREFIX, "");
 
-        // 验证token是否过期
-        boolean expiration = JwtTokenUtil.isExpiration(token);
-        System.out.println("Token是否过期:"+expiration);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         System.out.println("令牌签发时间：" + sdf.format(JwtTokenUtil.getIssuedAtDateFromToken(token)));
         System.out.println("令牌过期时间：" + sdf.format(JwtTokenUtil.getExpirationDateFromToken(token)));
@@ -101,6 +99,10 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             authorities.add(new SimpleGrantedAuthority(s));
         }
         if (username != null){
+            // 每次进行刷新token操作（可以修改为redis控制这样就不必麻烦前端人员）
+            String newToken = JwtTokenUtil.createToken(username, role);
+            // 设置请求头
+            response.addHeader(JwtTokenUtil.TOKEN_HEADER, JwtTokenUtil.TOKEN_PREFIX+newToken);
             return new UsernamePasswordAuthenticationToken(username, null,authorities);
         }
         return null;
