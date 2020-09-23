@@ -23,7 +23,7 @@ public class JwtTokenUtil {
 
     public static final String REFRESH_TOKEN = "refresh_token ";
     // 过期时间
-    public static final long EXPIRITION = 100 * 1000;
+    public static final long EXPIRITION = 7*24*3600*1000;
     //7*24*3600*1000;
     // 应用密钥
     public static final String APPSECRET_KEY = "asd4546546ewq1dasdqw84612";

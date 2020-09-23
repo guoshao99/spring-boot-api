@@ -1,6 +1,7 @@
 package com.gs.api.shop.controller;
 
 import com.gs.api.core.Result;
+import com.gs.api.core.exception.RRException;
 import com.gs.api.shop.entity.User;
 import com.gs.api.shop.dao.UserDao;
 import com.gs.api.shop.service.UserDetailsServiceImpl;
@@ -29,6 +30,14 @@ public class UserController {
 
     @Autowired
     private UserDao weightDao;
+
+    @GetMapping("testEx")
+    public Result testEx(Integer id){
+        if(id == null ){
+            throw new RRException("id不能为空！");
+        }
+        return Result.success(id);
+    }
 
     @RequestMapping("/list")
     public Result get(){
